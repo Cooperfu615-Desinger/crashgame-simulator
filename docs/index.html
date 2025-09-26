@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CrashGame Simulator (GH Pages)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <header class="mb-6">
+      <h1 class="text-3xl font-bold">CrashGame Simulator（紅黑籤）— Browser Edition</h1>
+      <p class="text-sm text-slate-500 mt-1">這是純前端版本，適合部署在 GitHub Pages。支援 CSV 上傳與即時模擬。</p>
+      <p class="text-xs text-slate-400 mt-1">提示：回合數 > 200k 可能較慢。大樣本建議用 CLI/Streamlit 伺服器版。</p>
+    </header>
+
+    <section class="grid md:grid-cols-3 gap-4 mb-6">
+      <div class="bg-white rounded-2xl shadow p-4">
+        <h2 class="font-semibold mb-2">1) 載入參數</h2>
+        <div class="space-y-3">
+          <button id="btnLoadFirst" class="px-3 py-2 rounded-xl bg-slate-900 text-white w-full">載入範例：初試啼聲</button>
+          <button id="btnLoadChosen" class="px-3 py-2 rounded-xl bg-slate-900 text-white w-full">載入範例：天選時刻</button>
+          <div>
+            <label class="text-sm">或上傳 CSV：</label>
+            <input id="fileCsv" type="file" accept=".csv" class="block mt-1 w-full text-sm" />
+            <p class="text-xs text-slate-500 mt-1">CSV 欄位：Stage,Multiplier,P_black</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow p-4">
+        <h2 class="font-semibold mb-2">2) 模擬設定</h2>
+        <div class="space-y-3">
+          <label class="block text-sm">Rounds（用逗號分隔）</label>
+          <input id="inpRounds" class="w-full px-3 py-2 rounded-xl border" value="10000,100000" />
+          <label class="block text-sm">Seed</label>
+          <input id="inpSeed" type="number" class="w-full px-3 py-2 rounded-xl border" value="123" />
+          <label class="block text-sm">Bet</label>
+          <input id="inpBet" type="number" step="0.1" class="w-full px-3 py-2 rounded-xl border" value="1.0" />
+          <div class="flex items-center gap-2">
+            <input id="chkAnalytical" type="checkbox" class="w-4 h-4">
+            <label for="chkAnalytical" class="text-sm">使用快速（解析式）模式（建議 ≥ 500k）</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow p-4">
+        <h2 class="font-semibold mb-2">3) 執行</h2>
+        <div class="space-y-3">
+          <button id="btnRun" class="px-3 py-2 rounded-xl bg-indigo-600 text-white w-full">Run Simulation</button>
+          <a id="btnDownload" class="px-3 py-2 rounded-xl bg-emerald-600 text-white w-full text-center hidden" download="SimResults.csv">下載結果 CSV</a>
+          <div id="msg" class="text-sm text-slate-500"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-2xl shadow p-4 mb-6">
+      <h2 class="font-semibold mb-2">結果表格</h2>
+      <div class="overflow-x-auto">
+        <table id="tbl" class="min-w-full text-sm">
+          <thead class="bg-slate-100">
+            <tr>
+              <th class="px-2 py-1 text-left">Stage</th>
+              <th class="px-2 py-1 text-left">Multiplier</th>
+              <th class="px-2 py-1 text-left">P_black</th>
+              <th class="px-2 py-1 text-left">Rounds</th>
+              <th class="px-2 py-1 text-left">Sim_RTP</th>
+              <th class="px-2 py-1 text-left">StdDev</th>
+              <th class="px-2 py-1 text-left">Success_Rate</th>
+              <th class="px-2 py-1 text-left">CI_low</th>
+              <th class="px-2 py-1 text-left">CI_high</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-2xl shadow p-4">
+      <h2 class="font-semibold mb-2">RTP 收斂</h2>
+      <canvas id="chart" height="100"></canvas>
+    </section>
+  </div>
+
+  <script src="assets/main.js"></script>
+</body>
+</html>
