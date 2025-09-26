@@ -1,84 +1,29 @@
-# CrashGame Simulator (紅黑籤)
+# CrashGame 五牌局模擬器（純前端版，可用於 GitHub Pages）
 
-Interactive (Streamlit) + CLI simulator for quick Monte Carlo validation of per-stage Multiplier and success probability (P_black). Observe RTP convergence, variance, and 95% confidence intervals across multiple round counts (10K/100K/1M).
+- 顯示 **5 種牌局**，每一步的 **Multiplier** 與 **步驟期望值 (p × m)**。
+- 可做 **全局倍率比例** 與 **牌局倍率比例** 調整，或按「**一鍵逼近**」把整體 RTP 拉到目標（預設 0.97）。
+- 可逐步修改倍率 / 機率，立即看到 **每步/每牌局/整體 RTP** 變化。
+- 可設定每個牌局的「**選中機率**」，作為整體 RTP 的加權。
 
----
+## 快速佈署（GitHub Pages）
+1. 將本專案 push 至你的 GitHub repo（例如 `crashgame-simulator`）。
+2. 到 GitHub → **Settings → Pages**：
+   - **Source**：選 **Deploy from a branch**
+   - **Branch**：選 **main**，資料夾選 **/docs**
+3. 儲存後，GitHub 會以 `docs/index.html` 作為入口，網址為：`https://<username>.github.io/<repo>/`。
 
-## Features
-- Editable Config: CSV or Excel (sheets named `Config_*`)
-- Two modes:
-  - Streamlit UI: upload/edit config -> run -> download results
-  - CLI: batch run multiple configs and output an Excel
-- Stats: Sim_RTP, StdDev, 95% CI, Success Rate
-- Reproducible with fixed random seed
+> 本版為 **純前端**，不需伺服器或 Python 執行環境。若需大量回合模擬、或讀取 Excel 多工作表，建議使用獨立的 Python/Streamlit 版本另行部署。
 
----
-
-## Structure
+## 檔案結構
 ```
-crashgame-simulator/
-├─ app/
-│  └─ streamlit_app.py
-├─ simulator/
-│  ├─ __init__.py
-│  └─ model.py
-├─ configs/
-│  ├─ Config_first_attempt.csv
-│  └─ Config_chosen_moment.csv
-├─ data/
-│  └─ CrashGame_Simulator.xlsx
-├─ cli.py
-├─ requirements.txt
+.
+├─ docs/
+│  ├─ index.html         # 單頁應用（入口）
+│  └─ assets/
+│     └─ app.js         # 主程式（JS）
 ├─ README.md
-├─ LICENSE
-└─ .gitignore
+└─ LICENSE (MIT)
 ```
 
----
-
-## Install
-```bash
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-## Usage
-
-### A) Streamlit UI
-```bash
-streamlit run app/streamlit_app.py
-```
-- Edit the default `Config_first_attempt` / `Config_chosen_moment` in-place
-- Or upload CSV/Excel (Excel needs sheets starting with `Config_`)
-- Pick rounds, seed, bet -> Run -> Download results
-
-### B) CLI
-```bash
-python cli.py -i configs/Config_first_attempt.csv -o SimResults.xlsx -r 10000 100000 1000000 -s 123
-```
-Args:
-- `-i/--input`: CSV/Excel path or a folder (folder batches all CSVs)
-- `-o/--output`: Output Excel path
-- `-r/--rounds`: One or more round counts
-- `-s/--seed`: Random seed
-- `-b/--bet`: Bet per round (default 1.0)
-
-CSV columns:
-```
-Stage,Multiplier,P_black
-1,1.02,0.95
-2,1.07,0.948
-...
-```
-
-Excel format:
-- Create one or more `Config_*` sheets with the same columns
-
----
-
-## Note
-- This is a single-trial success model (probability P_black yields Multiplier*bet, else 0). It is ideal for parameter sanity checks and long-run convergence.
-- For a staged "ladder" model (survive first N-1, succeed at N), add a function in `simulator/model.py` (hook provided in comments) or open a PR.
-
-License: MIT
+## 授權
+MIT
